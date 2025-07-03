@@ -3,20 +3,22 @@ export type Service = {
   id: string;
   type: "API" | "Database" | "Queue";
   status: "Online" | "Degraded" | "Offline";
+  version?: string;
+  description?: string;
   lastCheck: string;
 };
 
-type ServiceStatus = "Online" | "Degraded" | "Offline";
+export type ServiceStatus = "Online" | "Degraded" | "Offline";
 
-type Service = {
-  name: string;
+export type ServiceEvent = {
   id: string;
-  type: "API" | "Database" | "Queue";
-  status: ServiceStatus;
-  lastCheck: string;
+  serviceId: string;
+  timestamp: string;
+  type: string;
+  message: string;
 };
 
-type ServicesListProps = {
+export type ServicesListProps = {
   services: Service[];
 };
 
@@ -33,7 +35,7 @@ export interface NavbarProps {
   };
 }
 
-type ServiceCardProps = {
+export type ServiceCardProps = {
   title: string;
   status: "Online" | "Offline" | "Degraded";
   type: string;
