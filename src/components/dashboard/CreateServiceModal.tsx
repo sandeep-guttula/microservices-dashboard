@@ -1,6 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { serviceSchema, ServiceFormValues } from "@/lib/validation/serviceSchema";
+import {
+  serviceSchema,
+  ServiceFormValues,
+} from "@/lib/validation/serviceSchema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,8 +21,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SERVICE_STATUSES_FOR_MODAL, SERVICE_TYPES_FOR_MODAL } from "@/lib/constants";
+import {
+  SERVICE_STATUSES_FOR_MODAL,
+  SERVICE_TYPES_FOR_MODAL,
+} from "@/lib/constants";
 import { useCreateService } from "@/hooks/useCreateService";
+import { ServiceStatus, ServiceType } from "@/types/types";
 
 interface CreateServiceModalProps {
   onOpenChange: (open: boolean) => void;
@@ -39,7 +46,12 @@ export function CreateServiceModal({ onOpenChange }: CreateServiceModalProps) {
 
   const onSubmit = (values: ServiceFormValues) => {
     createService(
-      { ...values, lastCheck: new Date().toISOString() },
+      {
+        ...values,
+        type: values.type as ServiceType,
+        status: values.status as ServiceStatus,
+        lastCheck: new Date().toISOString(),
+      },
       {
         onSuccess: () => onOpenChange(false),
       }
@@ -59,11 +71,7 @@ export function CreateServiceModal({ onOpenChange }: CreateServiceModalProps) {
           <Label htmlFor="name" className="text-right">
             Name
           </Label>
-          <Input
-            id="name"
-            {...form.register("name")}
-            className="col-span-3"
-          />
+          <Input id="name" {...form.register("name")} className="col-span-3" />
           {form.formState.errors.name && (
             <p className="col-span-4 text-right text-red-500 text-xs">
               {form.formState.errors.name.message}

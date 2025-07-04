@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { serviceSchema, ServiceFormValues } from "@/lib/validation/serviceSchema";
+import {
+  serviceSchema,
+  ServiceFormValues,
+} from "@/lib/validation/serviceSchema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,16 +22,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SERVICE_STATUSES_FOR_MODAL, SERVICE_TYPES_FOR_MODAL } from "@/lib/constants";
+import {
+  SERVICE_STATUSES_FOR_MODAL,
+  SERVICE_TYPES_FOR_MODAL,
+} from "@/lib/constants";
 import { useUpdateService } from "@/hooks/useUpdateService";
-import { Service } from "@/types/types";
+import { Service, ServiceStatus, ServiceType } from "@/types/types";
 
 interface EditServiceModalProps {
   onOpenChange: (open: boolean) => void;
   service: Service;
 }
 
-export function EditServiceModal({ onOpenChange, service }: EditServiceModalProps) {
+export function EditServiceModal({
+  onOpenChange,
+  service,
+}: EditServiceModalProps) {
   const { mutate: updateService, isPending } = useUpdateService();
 
   const form = useForm<ServiceFormValues>({
@@ -49,9 +58,17 @@ export function EditServiceModal({ onOpenChange, service }: EditServiceModalProp
   }, [service, form]);
 
   const onSubmit = (values: ServiceFormValues) => {
-    updateService({ ...service, ...values }, {
-      onSuccess: () => onOpenChange(false),
-    });
+    updateService(
+      {
+        ...service,
+        ...values,
+        type: values.type as ServiceType,
+        status: values.status as ServiceStatus,
+      },
+      {
+        onSuccess: () => onOpenChange(false),
+      }
+    );
   };
 
   return (
@@ -67,11 +84,7 @@ export function EditServiceModal({ onOpenChange, service }: EditServiceModalProp
           <Label htmlFor="name" className="text-right">
             Name
           </Label>
-          <Input
-            id="name"
-            {...form.register("name")}
-            className="col-span-3"
-          />
+          <Input id="name" {...form.register("name")} className="col-span-3" />
           {form.formState.errors.name && (
             <p className="col-span-4 text-right text-red-500 text-xs">
               {form.formState.errors.name.message}

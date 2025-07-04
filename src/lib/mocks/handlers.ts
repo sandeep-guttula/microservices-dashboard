@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { Service, ServiceEvent } from "@/types/types";
+import { Service, ServiceEvent, ServiceStatus } from "@/types/types";
 
 const services: Service[] = [
   {
@@ -387,7 +387,12 @@ const simulateStatusChanges = () => {
     const service = services[randomIndex];
     const oldStatus = service.status;
 
-    const statuses = ["Online", "Offline", "Degraded", "Restart"];
+    const statuses: ServiceStatus[] = [
+      "Online",
+      "Offline",
+      "Degraded",
+      "Restart",
+    ];
     const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
 
     if (oldStatus !== newStatus) {
@@ -429,9 +434,9 @@ const simulateStatusChanges = () => {
       if (!serviceEvents[service.id]) {
         serviceEvents[service.id] = [];
       }
-      serviceEvents[service.id].unshift(event); // Add to the beginning to show newest first
+      serviceEvents[service.id].unshift(event);
     }
-  }, 5000); // Simulate status changes every 5 seconds
+  }, 5000);
 };
 
 const delay = async () => {
@@ -444,7 +449,6 @@ const randomFail = () => Math.random() < 0.05;
 simulateStatusChanges();
 
 export const handlers = [
-  // GET /api/services?status=Online&name_like=User&page=1&limit=10
   http.get("/api/services", async ({ request }) => {
     await delay();
     if (randomFail()) return new HttpResponse(null, { status: 500 });
@@ -453,7 +457,7 @@ export const handlers = [
     const status = url.searchParams.get("status");
     const nameLike = url.searchParams.get("name_like");
     const page = parseInt(url.searchParams.get("page") || "1", 10);
-    const limit = parseInt(url.searchParams.get("limit") || "10", 10);
+    const limitParam = url.searchParams.get("limit");
 
     let result = [...services];
 
@@ -467,10 +471,14 @@ export const handlers = [
       );
     }
 
-    const start = (page - 1) * limit;
-    const paginated = result.slice(start, start + limit);
+    if (limitParam) {
+      const limit = parseInt(limitParam, 10);
+      const start = (page - 1) * limit;
+      const paginatedResult = result.slice(start, start + limit);
+      return HttpResponse.json(paginatedResult);
+    }
 
-    return HttpResponse.json(paginated);
+    return HttpResponse.json(result);
   }),
 
   http.get("/api/services/:id", async ({ params }) => {

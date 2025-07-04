@@ -1,14 +1,15 @@
+export type ServiceType = "API" | "Database" | "Queue" | "Cache" | "Gateway" | "Other";
+export type ServiceStatus = "Online" | "Degraded" | "Offline" | "Restart";
+
 export type Service = {
   name: string;
   id: string;
-  type: "API" | "Database" | "Queue";
-  status: "Online" | "Degraded" | "Offline";
+  type: ServiceType;
+  status: ServiceStatus;
   version?: string;
   description?: string;
   lastCheck: string;
 };
-
-export type ServiceStatus = "Online" | "Degraded" | "Offline";
 
 export type ServiceEvent = {
   id: string;
@@ -48,3 +49,5 @@ export type ServiceCardProps = {
   id: string;
   description: string;
 };
+
+export type ServiceEventType = ServiceEvent['type'];

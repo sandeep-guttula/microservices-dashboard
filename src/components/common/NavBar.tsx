@@ -10,7 +10,7 @@ const Navbar = ({
     title: "MonitoCorp",
   },
   user = {
-    name: "Jane Doe",
+    name: "Sandeep Guttula",
     avatarUrl: "",
   },
 }: NavbarProps) => {

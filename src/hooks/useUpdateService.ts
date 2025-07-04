@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Service } from "@/types/types";
+import { Service, ServiceEventType } from "@/types/types";
 import { updateService, createServiceEvent } from "@/lib/queries/services";
 import { servicesKeys } from "../lib/queries/services";
 
@@ -41,12 +41,14 @@ export const useUpdateService = () => {
       queryClient.invalidateQueries({ queryKey: servicesKeys.detail(data.id) });
       toast.success("Service updated successfully.");
 
-      const previousService = (queryClient.getQueryData<Service[]>(servicesKeys.lists()) || []).find(s => s.id === data.id);
+      const previousService = (queryClient.getQueryData<Service[]>(
+        servicesKeys.lists()
+      ) || []).find((s) => s.id === data.id);
 
       if (previousService && previousService.status !== variables.status) {
         createServiceEvent(data.id, {
           timestamp: new Date().toISOString(),
-          type: variables.status.toLowerCase() as any,
+          type: variables.status.toLowerCase() as ServiceEventType,
           message: `Service status changed to ${variables.status}`,
         });
       }

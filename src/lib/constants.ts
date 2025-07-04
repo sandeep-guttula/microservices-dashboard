@@ -29,4 +29,3 @@ export const SERVICE_TYPES_FOR_MODAL = SERVICE_TYPES.filter(
 export const SERVICE_STATUSES_FOR_MODAL = SERVICE_STATUSES.filter(
   (status) => status !== "all"
 );
-

@@ -25,7 +25,7 @@ interface ServiceRowProps {
 }
 
 export const ServiceRow = memo(({ service }: ServiceRowProps) => {
-  const { data: polledService } = usePollServiceStatus(service.id);
+  const { service: polledService } = usePollServiceStatus(service.id);
   const displayStatus = polledService?.status || service.status;
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -54,11 +54,16 @@ export const ServiceRow = memo(({ service }: ServiceRowProps) => {
       <td className="px-6 py-4">
         <StatusBadge status={displayStatus} />
       </td>
-      <td className="px-6 py-4">{polledService?.lastCheck || service.lastCheck}</td>
+      <td className="px-6 py-4">
+        {polledService?.lastCheck || service.lastCheck}
+      </td>
       <td className="px-6 py-4 text-right space-x-3">
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogTrigger asChild>
-            <button className="text-gray-600 hover:text-blue-600" aria-label={`Edit ${service.name}`}>
+            <button
+              className="text-gray-600 hover:text-blue-600"
+              aria-label={`Edit ${service.name}`}
+            >
               <FaEdit />
             </button>
           </DialogTrigger>
@@ -69,7 +74,10 @@ export const ServiceRow = memo(({ service }: ServiceRowProps) => {
         </Dialog>
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
           <DialogTrigger asChild>
-            <button className="text-gray-600 hover:text-red-600" aria-label={`Delete ${service.name}`}>
+            <button
+              className="text-gray-600 hover:text-red-600"
+              aria-label={`Delete ${service.name}`}
+            >
               <FaTrash />
             </button>
           </DialogTrigger>
