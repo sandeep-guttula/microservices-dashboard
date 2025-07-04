@@ -1,7 +1,5 @@
 # MonitoCorp - Live Service Monitoring Dashboard
 
-This is a proof-of-concept for an internal dashboard for MonitoCorp's Site Reliability Engineering (SRE) team to monitor the health of microservices in real-time. The dashboard provides live status updates, service management capabilities, and detailed views of service health, all wrapped in a modern, responsive, and professionally designed user interface.
-
 ## Features
 
 - **Main Dashboard View**: A clean, organized table displaying all monitored services with their name, type, and current status.
@@ -43,12 +41,14 @@ The application clearly separates server state from client state.
 To run the application locally, follow these steps:
 
 1.  **Clone the repository:**
+
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/sandeep-guttula/microservices-dashboard.git
     cd monito-corp
     ```
 
 2.  **Install dependencies:**
+
     ```bash
     npm install
     ```

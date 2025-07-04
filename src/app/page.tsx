@@ -11,15 +11,12 @@ import {
 import { IoLayersOutline } from "react-icons/io5";
 
 import { STATUS } from "@/lib/constants";
+import { ServiceRowSkeleton } from "@/components/dashboard/ServiceRowSkeleton";
 import { AddServiceDialog } from "@/components/dashboard/AddServiceDialog";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default function Home() {
   const { data: services, isLoading, isError, error } = useAllServicesQuery();
-
-  if (isLoading) {
-    return <div>Loading service counts...</div>;
-  }
 
   if (isError) {
     return <div>Error loading service counts: {error?.message}</div>;
@@ -55,25 +52,39 @@ export default function Home() {
               icon={<IoMdCheckmarkCircle className="text-green-500" />}
               label="Online"
               value={onlineServices}
+              isLoading={isLoading}
             />
             <ServiceItem
               icon={<IoMdWarning className="text-yellow-500" />}
               label="Degraded"
               value={degradedServices}
+              isLoading={isLoading}
             />
             <ServiceItem
               icon={<IoMdCloseCircle className="text-red-500" />}
               label="Offline"
               value={offlineServices}
+              isLoading={isLoading}
             />
             <ServiceItem
               icon={<IoLayersOutline className="text-gray-700" />}
               label="Total Services"
               value={totalServices}
+              isLoading={isLoading}
             />
           </section>
           <FiltersBar />
-          <ServicesList />
+          {isLoading ? (
+            <div className="w-full border rounded-md">
+              <ServiceRowSkeleton />
+              <ServiceRowSkeleton />
+              <ServiceRowSkeleton />
+              <ServiceRowSkeleton />
+              <ServiceRowSkeleton />
+            </div>
+          ) : (
+            <ServicesList />
+          )}
         </section>
       </div>
     </ErrorBoundary>
