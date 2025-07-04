@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Service } from "@/types/types";
-import { createService } from "@/lib/api";
+import { createService } from "@/lib/queries/services";
 import { servicesKeys } from "../lib/queries/services";
 
 export const useCreateService = () => {

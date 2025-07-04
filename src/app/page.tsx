@@ -28,7 +28,7 @@ export default function Home() {
   const onlineServices =
     services?.filter((s) => s.status === STATUS.ONLINE).length || 0;
   const degradedServices =
-    services?.filter((s) => s.status === STATUS.WARNING).length || 0;
+    services?.filter((s) => s.status === STATUS.DEGRADED).length || 0;
   const offlineServices =
     services?.filter((s) => s.status === STATUS.OFFLINE).length || 0;
   const totalServices = services?.length || 0;

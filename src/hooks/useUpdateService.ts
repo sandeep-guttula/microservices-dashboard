@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Service } from "@/types/types";
-import { updateService } from "@/lib/api";
+import { updateService } from "@/lib/queries/services";
 import { servicesKeys } from "../lib/queries/services";
 
 export const useUpdateService = () => {

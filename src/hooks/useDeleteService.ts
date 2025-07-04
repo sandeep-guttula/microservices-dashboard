@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { deleteService } from "@/lib/api";
+import { deleteService } from "@/lib/queries/services";
 import { servicesKeys } from "../lib/queries/services";
 import { Service } from "@/types/types";
 

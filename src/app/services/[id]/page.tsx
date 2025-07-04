@@ -16,10 +16,10 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 export default function ServiceDetailsPage() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
-  const { data: service, isLoading, isError } = useServiceDetails(id);
-  const { data: metrics, isLoading: metricsLoading } = useServiceMetricsQuery(id);
+  const { data: service, isLoading, isError: isServiceError, isFetching: isServiceFetching } = useServiceDetails(id);
+  const { data: metrics, isError: isMetricsError, isFetching: isMetricsFetching } = useServiceMetricsQuery(id);
 
-  if (isError) {
+  if (isServiceError) {
     return <div className="text-red-500">Error loading service details.</div>;
   }
 
@@ -47,12 +47,19 @@ export default function ServiceDetailsPage() {
       >
         <div>
           <Button onClick={() => router.back()}>&larr; Back</Button>
+          {(isServiceFetching || isMetricsFetching) && <span className="ml-4 text-gray-500">Updating...</span>}
         </div>
         <ServiceCard service={service} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <MetricCard title="Uptime" value={metrics?.uptime ?? "Loading..."} />
-          <MetricCard title="Latency" value={metrics?.latency ?? "Loading..."} />
-          <MetricCard title="Error Rate" value={metrics?.errorRate ?? "Loading..."} />
+          {isMetricsError ? (
+            <div className="text-red-500 col-span-3">Error loading metrics.</div>
+          ) : (
+            <>
+              <MetricCard title="Uptime" value={metrics?.uptime ?? "Loading..."} />
+              <MetricCard title="Latency" value={metrics?.latency ?? "Loading..."} />
+              <MetricCard title="Error Rate" value={metrics?.errorRate ?? "Loading..."} />
+            </>
+          )}
         </div>
         <ServiceConfigCard service={service} />
         <Suspense fallback={<div>Loading events...</div>}>

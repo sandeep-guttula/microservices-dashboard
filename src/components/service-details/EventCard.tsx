@@ -16,7 +16,7 @@ export function EventCard({ event }: EventCardProps) {
             {format(new Date(event.timestamp), "PPP p")}
           </span>
         </div>
-        <p className="text-muted-foreground text-sm">{event.description}</p>
+        <p className="text-muted-foreground text-sm">{event.message}</p>
       </CardContent>
     </Card>
   );

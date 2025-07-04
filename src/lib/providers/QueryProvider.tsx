@@ -15,10 +15,7 @@ export default function QueryProvider({
         defaultOptions: {
           queries: {
             retry: 3,
-            onError: (error) => {
-              console.error("Query error:", error);
-              // toast.error(`Something went wrong: ${error.message}`);
-            },
+            
           },
         },
       })

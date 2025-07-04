@@ -38,9 +38,12 @@ export function CreateServiceModal({ onOpenChange }: CreateServiceModalProps) {
   });
 
   const onSubmit = (values: ServiceFormValues) => {
-    createService(values, {
-      onSuccess: () => onOpenChange(false),
-    });
+    createService(
+      { ...values, lastCheck: new Date().toISOString() },
+      {
+        onSuccess: () => onOpenChange(false),
+      }
+    );
   };
 
   return (
@@ -73,7 +76,9 @@ export function CreateServiceModal({ onOpenChange }: CreateServiceModalProps) {
             Type
           </Label>
           <Select
-            onValueChange={(value) => form.setValue("type", value)}
+            onValueChange={(value) =>
+              form.setValue("type", value as "API" | "Database" | "Queue")
+            }
             defaultValue={form.watch("type")}
           >
             <SelectTrigger className="col-span-3">
@@ -99,7 +104,12 @@ export function CreateServiceModal({ onOpenChange }: CreateServiceModalProps) {
             Status
           </Label>
           <Select
-            onValueChange={(value) => form.setValue("status", value)}
+            onValueChange={(value) =>
+              form.setValue(
+                "status",
+                value as "Online" | "Degraded" | "Offline"
+              )
+            }
             defaultValue={form.watch("status")}
           >
             <SelectTrigger className="col-span-3">

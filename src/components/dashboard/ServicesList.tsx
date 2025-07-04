@@ -5,6 +5,8 @@ import { ServiceRow } from "./ServiceRow";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { ServiceRowSkeleton } from "./ServiceRowSkeleton";
+import { AnimatePresence } from "framer-motion";
 
 export default function ServicesList() {
   const searchParams = useSearchParams();
@@ -12,27 +14,33 @@ export default function ServicesList() {
 
   const filters = {
     name_like: searchParams.get("search") || undefined,
-    status: searchParams.get("status") === "all" ? undefined : searchParams.get("status") || undefined,
-    type: searchParams.get("type") === "all" ? undefined : searchParams.get("type") || undefined,
+    status:
+      searchParams.get("status") === "all"
+        ? undefined
+        : searchParams.get("status") || undefined,
+    type:
+      searchParams.get("type") === "all"
+        ? undefined
+        : searchParams.get("type") || undefined,
   };
 
   useEffect(() => {
     setPage(1);
-  }, [filters.search, filters.status, filters.type]);
+  }, [filters.name_like, filters.status, filters.type]);
 
-  const { data, isLoading, isError, error, isPlaceholderData } =
+  const { data, isLoading, isError, error, isPlaceholderData, isFetching } =
     useServicesQuery({
       ...filters,
       page,
       limit: 10,
     });
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   if (isError) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className="text-center py-12 text-red-500">
+        Error: {error.message}
+      </div>
+    );
   }
 
   return (
@@ -53,14 +61,20 @@ export default function ServicesList() {
             </tr>
           </thead>
           <tbody className="text-gray-700">
-            {data?.map((service) => (
-              <ServiceRow key={service.id} service={service} />
-            ))}
+            <AnimatePresence>
+              {isLoading
+                ? Array.from({ length: 10 }).map((_, i) => (
+                    <ServiceRowSkeleton key={i} />
+                  ))
+                : data?.map((service) => (
+                    <ServiceRow key={service.id} service={service} />
+                  ))}
+            </AnimatePresence>
           </tbody>
         </table>
       </div>
 
-      {data?.length === 0 && (
+      {data?.length === 0 && !isLoading && (
         <div className="text-center py-12 text-gray-500">
           No services found.
         </div>
@@ -71,7 +85,8 @@ export default function ServicesList() {
           Showing {(data?.length ?? 0) > 0 ? `1 to ${data?.length ?? 0}` : 0} of{" "}
           {data?.length ?? 0} services
         </span>
-        <div className="space-x-2">
+        <div className="space-x-2 flex items-center">
+          {isFetching && <span className="text-sm text-gray-500">Loading...</span>}
           <Button
             variant="outline"
             size="sm"
