@@ -20,7 +20,12 @@ export default function ServiceDetailsPage() {
   const { data: metrics, isError: isMetricsError, isFetching: isMetricsFetching } = useServiceMetricsQuery(id);
 
   if (isServiceError) {
-    return <div className="text-red-500">Error loading service details.</div>;
+    return (
+      <div className="container mx-auto p-4 text-center">
+        <p className="text-red-500 mb-4">Error loading service details.</p>
+        <Button onClick={() => router.refresh()}>Refresh</Button>
+      </div>
+    );
   }
 
   if (isLoading) {
@@ -52,7 +57,10 @@ export default function ServiceDetailsPage() {
         <ServiceCard service={service} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isMetricsError ? (
-            <div className="text-red-500 col-span-3">Error loading metrics.</div>
+            <div className="text-red-500 col-span-3 text-center">
+              <p className="mb-4">Error loading metrics.</p>
+              <Button onClick={() => router.refresh()}>Refresh</Button>
+            </div>
           ) : (
             <>
               <MetricCard title="Uptime" value={metrics?.uptime ?? "Loading..."} />
