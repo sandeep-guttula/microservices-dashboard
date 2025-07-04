@@ -29,6 +29,12 @@ export function FiltersBar() {
   const [type, setType] = useState(initialType);
 
   useEffect(() => {
+    setSearch(searchParams.get("search") || "");
+    setStatus(searchParams.get("status") || "all");
+    setType(searchParams.get("type") || "all");
+  }, [searchParams]);
+
+  useEffect(() => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
     if (debouncedSearch) {
       newSearchParams.set("search", debouncedSearch);
@@ -86,7 +92,7 @@ export function FiltersBar() {
 
         <Select value={type} onValueChange={setType}>
           <SelectTrigger className="w-[130px]">
-            <SelectValue placeholder="All Types">{type === "all" ? "All Types" : type}</SelectValue>
+            <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
             {SERVICE_TYPES.map((t) => (

@@ -1,68 +1,55 @@
 # MonitoCorp - Live Service Monitoring Dashboard
 
-## Features
+This is a proof-of-concept for a new internal dashboard at “MonitoCorp.” This dashboard is used by the Site Reliability Engineering (SRE) team to monitor the health of our various microservices. The key requirement is that the dashboard must feel live and highly responsive and professionally designed, providing engineers with up-to-the-second information without requiring them to manually refresh the page.
 
-- **Main Dashboard View**: A clean, organized table displaying all monitored services with their name, type, and current status.
-- **Live Status Updates**: Automatically polls for status updates every 15 seconds, updating the UI without full-page reloads. Data is also refreshed automatically when the browser tab is refocused.
-- **Service Management (CRUD)**: Intuitive modals for adding, editing, and deleting services with optimistic UI updates for a seamless experience.
-- **Service Details & Historical Events**: A dedicated view for each service showing its configuration and a history of status events, implemented with infinite scrolling for performance.
-- **Filtering and Searching**: Performant, real-time filtering by service status and searching by name.
-- **Responsive Design**: The application is fully responsive and works on all screen sizes.
+## Core Features
 
-## Architectural Decisions & Tech Stack
+*   **Main Dashboard View**: Display a list of all monitored services in a clean, well-organized table.
+*   **Live Status Updates**: The status of a service is volatile and can change at any moment. The dashboard automatically polls for status updates for all visible services periodically (e.g., every 15 seconds), updating the UI without a full-page re-render.
+*   **Service Management (CRUD)**: Provide an intuitive way for users to add, edit, and delete services. These actions could be triggered from a modal or a dedicated form view.
+*   **Service Details & Historical Events**: Clicking on a service in the list should navigate the user to a dedicated “Service Details” view with a smooth transition.
+*   **Filtering and Searching**: The main dashboard should allow users to filter the list of services by their status and include a text input to search by name…
 
-The primary goal was to create a "live" and highly responsive dashboard. The technology choices and architectural patterns were selected to meet this requirement.
+## Technical Specifications
 
-### Core Technologies
-
-- **Framework**: [Next.js](https://nextjs.org/) (React) was chosen for its hybrid rendering capabilities, file-based routing, and overall developer experience.
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with [Shadcn/ui](https://ui.shadcn.com/) components were used to build a modern, polished, and responsive UI quickly.
-- **State Management**:
-  - **Server State**: [TanStack Query (React Query)](https://tanstack.com/query/latest) is the cornerstone of the state management architecture. It handles all server state, including data fetching, caching, polling, and optimistic updates. This was chosen for its powerful features that simplify complex asynchronous state management.
-  - **Client State**: [Zustand](https://zustand-demo.pmnd.rs/) is used for managing global client-side state, such as the state of modals or filters. It was chosen for its simplicity and minimal boilerplate.
-- **Mock API**: [Mock Service Worker (MSW)](https://mswjs.io/) is used to simulate a realistic API backend. It intercepts network requests and returns mock data, allowing for the development and testing of the frontend in isolation.
-- **Forms**: [React Hook Form](https://react-hook-form.com/) with [Zod](https://zod.dev/) for schema validation is used for all forms, providing a robust and type-safe way to handle user input.
-
-### State Management Strategy
-
-The application clearly separates server state from client state.
-
-- **Server State (managed by TanStack Query)**:
-  - **Caching**: Service lists and details are cached to avoid unnecessary network requests. `staleTime` is configured to refetch data intelligently.
-  - **Polling**: A custom `usePolling` hook is implemented to refetch service statuses every 15 seconds, providing the "live" feel.
-  - **Optimistic Updates**: All CRUD operations (Create, Update, Delete) are implemented optimistically. The UI is updated instantly, and then reverted only if the API call fails.
-  - **Refetch on Focus**: TanStack Query's default `refetchOnWindowFocus` behavior is leveraged to ensure data is fresh when a user returns to the application.
-
-- **Client State (managed by Zustand)**:
-  - Global stores are used for state that is not tied to the server, such as the open/closed state of the "Add Service" dialog.
+*   **Framework**: React/Next.js
+*   **API**: Mock Service Worker (MSW) is used to simulate a backend API.
+*   **Styling**: Tailwind CSS with Radix UI for a polished component library.
+*   **State Management**: TanStack Query for server state and Zustand for client state.
 
 ## Getting Started
 
-To run the application locally, follow these steps:
+First, install the dependencies:
 
-1.  **Clone the repository:**
+```bash
+npm install
+```
 
-    ```bash
-    git clone https://github.com/sandeep-guttula/microservices-dashboard.git
-    cd monito-corp
-    ```
+Then, run the development server:
 
-2.  **Install dependencies:**
-
-    ```bash
-    npm install
-    ```
-
-3.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
+```bash
+npm run dev
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Available Scripts
+## Architectural Decisions
 
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the application for production.
-- `npm run start`: Starts a production server.
-- `npm run lint`: Lints the codebase for errors.
+### State Management
+
+The core of this application is its state management architecture. We've chosen to use a combination of TanStack Query and Zustand to manage the application's state.
+
+*   **TanStack Query (formerly React Query)** is used to manage all server state. This includes fetching, caching, and updating data from the API. TanStack Query is an excellent choice for this application because it provides a number of features that are essential for building a "live" dashboard, such as:
+    *   **Automatic Caching**: TanStack Query automatically caches data from the API, which helps to improve performance and reduce the number of network requests.
+    *   **Background Refetching**: TanStack Query can automatically refetch data in the background, which ensures that the data displayed in the UI is always up-to-date.
+    *   **Optimistic Updates**: TanStack Query allows you to perform optimistic updates, which makes the UI feel more responsive.
+
+*   **Zustand** is used to manage all client state. This includes things like the current search query, the selected filters, and the state of the modals. Zustand is a lightweight and flexible state management library that is easy to use and has a small bundle size.
+
+### API Mocking
+
+We've used Mock Service Worker (MSW) to simulate a backend API. MSW is a powerful library that allows you to intercept network requests and return mock responses. This is a great way to develop and test a frontend application without having to build a real backend.
+
+### Styling
+
+We've used Tailwind CSS with Radix UI for styling. Tailwind CSS is a utility-first CSS framework that makes it easy to build beautiful and responsive user interfaces. Radix UI is a collection of unstyled, accessible, and customizable UI components that can be used to build a design system.

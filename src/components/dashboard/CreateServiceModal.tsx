@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SERVICE_STATUSES, SERVICE_TYPES } from "@/lib/constants";
+import { SERVICE_STATUSES_FOR_MODAL, SERVICE_TYPES_FOR_MODAL } from "@/lib/constants";
 import { useCreateService } from "@/hooks/useCreateService";
 
 interface CreateServiceModalProps {
@@ -85,7 +85,7 @@ export function CreateServiceModal({ onOpenChange }: CreateServiceModalProps) {
               <SelectValue placeholder="Select a type" />
             </SelectTrigger>
             <SelectContent>
-              {SERVICE_TYPES.map((type) => (
+              {SERVICE_TYPES_FOR_MODAL.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
                 </SelectItem>
@@ -116,7 +116,7 @@ export function CreateServiceModal({ onOpenChange }: CreateServiceModalProps) {
               <SelectValue placeholder="Select a status" />
             </SelectTrigger>
             <SelectContent>
-              {SERVICE_STATUSES.map((status) => (
+              {SERVICE_STATUSES_FOR_MODAL.map((status) => (
                 <SelectItem key={status} value={status}>
                   {status}
                 </SelectItem>

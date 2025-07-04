@@ -75,12 +75,28 @@ export default function Home() {
           </section>
           <FiltersBar />
           {isLoading ? (
-            <div className="w-full border rounded-md">
-              <ServiceRowSkeleton />
-              <ServiceRowSkeleton />
-              <ServiceRowSkeleton />
-              <ServiceRowSkeleton />
-              <ServiceRowSkeleton />
+            <div className="bg-white rounded-lg border shadow-sm w-full">
+              <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold">Services</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs border-b">
+                    <tr>
+                      <th className="px-6 py-3">Service</th>
+                      <th className="px-6 py-3">Type</th>
+                      <th className="px-6 py-3">Status</th>
+                      <th className="px-6 py-3">Last Check</th>
+                      <th className="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-700">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <ServiceRowSkeleton key={i} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <ServicesList />

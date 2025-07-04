@@ -112,6 +112,23 @@ export const deleteService = async (id: string): Promise<void> => {
   return;
 };
 
+export const createServiceEvent = async (
+  serviceId: string,
+  event: Omit<ServiceEvent, "id" | "serviceId">
+): Promise<ServiceEvent> => {
+  const response = await fetch(`${API_BASE_URL}/services/${serviceId}/events`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(event),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to create service event");
+  }
+  return response.json();
+};
+
 
 // Query Keys
 export const servicesKeys = {

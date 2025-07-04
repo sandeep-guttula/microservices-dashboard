@@ -22,3 +22,11 @@ export const SERVICE_STATUSES = [
   STATUS.DEGRADED,
   STATUS.RESTART,
 ];
+
+export const SERVICE_TYPES_FOR_MODAL = SERVICE_TYPES.filter(
+  (type) => type !== "all"
+);
+export const SERVICE_STATUSES_FOR_MODAL = SERVICE_STATUSES.filter(
+  (status) => status !== "all"
+);
+

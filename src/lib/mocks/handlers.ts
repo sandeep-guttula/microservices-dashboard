@@ -386,24 +386,52 @@ const simulateStatusChanges = () => {
     const randomIndex = Math.floor(Math.random() * services.length);
     const service = services[randomIndex];
     const oldStatus = service.status;
-    const newStatus = Math.random() > 0.5 ? "Online" : "Offline";
+
+    const statuses = ["Online", "Offline", "Degraded", "Restart"];
+    const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
 
     if (oldStatus !== newStatus) {
       service.status = newStatus;
+
+      let eventType: ServiceEvent["type"];
+      let message: string;
+
+      switch (newStatus) {
+        case "Online":
+          eventType = "online";
+          message = `${service.name} is now Online.`;
+          break;
+        case "Offline":
+          eventType = "offline";
+          message = `${service.name} went Offline.`;
+          break;
+        case "Degraded":
+          eventType = "degraded";
+          message = `${service.name} is now Degraded.`;
+          break;
+        case "Restart":
+          eventType = "restart";
+          message = `${service.name} is restarting.`;
+          break;
+        default:
+          eventType = "error";
+          message = `${service.name} status changed to unknown.`;
+      }
+
       const event: ServiceEvent = {
         id: Math.random().toString(36).substring(2),
         serviceId: service.id,
         timestamp: new Date().toISOString(),
-        type: newStatus === "Online" ? "online" : "offline",
-        message: `Service went ${newStatus.toLowerCase()}`,
+        type: eventType,
+        message: message,
       };
 
       if (!serviceEvents[service.id]) {
         serviceEvents[service.id] = [];
       }
-      serviceEvents[service.id].push(event);
+      serviceEvents[service.id].unshift(event); // Add to the beginning to show newest first
     }
-  }, 10000);
+  }, 5000); // Simulate status changes every 5 seconds
 };
 
 const delay = async () => {
