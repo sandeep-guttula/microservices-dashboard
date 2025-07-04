@@ -1,6 +1,7 @@
 "use client";
 import { FiltersBar } from "@/components/dashboard/FiltersBar";
 import { ServiceItem } from "@/components/dashboard/ServiceItem";
+import { useAllServicesQuery } from "@/lib/queries/services";
 import ServicesList from "@/components/dashboard/ServicesList";
 import {
   IoMdCheckmarkCircle,
@@ -8,38 +9,32 @@ import {
   IoMdWarning,
 } from "react-icons/io";
 import { IoLayersOutline } from "react-icons/io5";
-import { useEffect } from "react";
-import { useMswStore } from "@/lib/stores/useMswStore";
-import { useServiceStore } from "@/lib/stores/useServiceStore";
 
 import { STATUS } from "@/lib/constants";
 import { AddServiceDialog } from "@/components/dashboard/AddServiceDialog";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default function Home() {
-  const mswReady = useMswStore((state) => state.mswReady);
-  const { setServices, services, filteredServices } = useServiceStore();
+  const { data: services, isLoading, isError, error } = useAllServicesQuery();
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetch("/api/services");
-        if (!response.ok) {
-          console.log("Failed to fetch services:", response.statusText);
-          return;
-        }
-        const data = await response.json();
-        console.log("Fetched services:", data);
-        setServices(data);
-      } catch (error) {
-        console.log("Error fetching services:", error);
-        setServices([]);
-      }
-    };
-    fetchServices();
-  }, [mswReady, setServices]);
+  if (isLoading) {
+    return <div>Loading service counts...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading service counts: {error?.message}</div>;
+  }
+
+  const onlineServices =
+    services?.filter((s) => s.status === STATUS.ONLINE).length || 0;
+  const degradedServices =
+    services?.filter((s) => s.status === STATUS.WARNING).length || 0;
+  const offlineServices =
+    services?.filter((s) => s.status === STATUS.OFFLINE).length || 0;
+  const totalServices = services?.length || 0;
 
   return (
-    <>
+    <ErrorBoundary>
       <div className="bg-[#F9FAFB] min-h-screen flex justify-center items-start py-10 px-4">
         <section className="flex flex-col items-center w-full max-w-6xl gap-6">
           <div className="flex flex-col md:flex-row justify-between w-full gap-4">
@@ -59,28 +54,28 @@ export default function Home() {
             <ServiceItem
               icon={<IoMdCheckmarkCircle className="text-green-500" />}
               label="Online"
-              value={services.filter((s) => s.status === STATUS.ONLINE).length}
+              value={onlineServices}
             />
             <ServiceItem
               icon={<IoMdWarning className="text-yellow-500" />}
               label="Degraded"
-              value={services.filter((s) => s.status === STATUS.WARNING).length}
+              value={degradedServices}
             />
             <ServiceItem
               icon={<IoMdCloseCircle className="text-red-500" />}
               label="Offline"
-              value={services.filter((s) => s.status === STATUS.OFFLINE).length}
+              value={offlineServices}
             />
             <ServiceItem
               icon={<IoLayersOutline className="text-gray-700" />}
               label="Total Services"
-              value={services.length}
+              value={totalServices}
             />
           </section>
           <FiltersBar />
-          <ServicesList services={filteredServices} />
+          <ServicesList />
         </section>
       </div>
-    </>
+    </ErrorBoundary>
   );
 }

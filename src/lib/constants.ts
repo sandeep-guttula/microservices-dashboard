@@ -1,10 +1,12 @@
 export const STATUS = {
   ONLINE: "Online",
   OFFLINE: "Offline",
-  WARNING: "Warning",
+  DEGRADED: "Degraded",
+  RESTART: "Restart",
 };
 
 export const SERVICE_TYPES = [
+  "all",
   "API",
   "Database",
   "Queue",
@@ -13,9 +15,10 @@ export const SERVICE_TYPES = [
   "Other",
 ];
 
-export const SERVICE_VALUES = [
-  "All",
+export const SERVICE_STATUSES = [
+  "all",
   STATUS.ONLINE,
   STATUS.OFFLINE,
-  STATUS.WARNING,
+  STATUS.DEGRADED,
+  STATUS.RESTART,
 ];

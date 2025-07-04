@@ -8,12 +8,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SERVICE_TYPES, SERVICE_VALUES } from "@/lib/constants";
-import { useServiceStore } from "@/lib/stores/useServiceStore";
+import { SERVICE_STATUSES, SERVICE_TYPES } from "@/lib/constants";
 import { Search } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function FiltersBar() {
-  const { filters, setFilter } = useServiceStore();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialSearch = searchParams.get("search") || "";
+  const initialStatus = searchParams.get("status") || "all";
+  const initialType = searchParams.get("type") || "all";
+
+  const [search, setSearch] = useState(initialSearch);
+  const debouncedSearch = useDebounce(search, 500);
+
+  const [status, setStatus] = useState(initialStatus);
+  const [type, setType] = useState(initialType);
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (debouncedSearch) {
+      newSearchParams.set("search", debouncedSearch);
+    } else {
+      newSearchParams.delete("search");
+    }
+    router.push(`?${newSearchParams.toString()}`);
+  }, [debouncedSearch, router, searchParams]);
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (status && status !== "all") {
+      newSearchParams.set("status", status);
+    } else {
+      newSearchParams.delete("status");
+    }
+    router.push(`?${newSearchParams.toString()}`);
+  }, [status, router, searchParams]);
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (type && type !== "all") {
+      newSearchParams.set("type", type);
+    } else {
+      newSearchParams.delete("type");
+    }
+    router.push(`?${newSearchParams.toString()}`);
+  }, [type, router, searchParams]);
 
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-md border p-4 bg-muted/50 w-full">
@@ -21,34 +64,34 @@ export function FiltersBar() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search services..."
-          value={filters.search}
-          onChange={(e) => setFilter("search", e.target.value)}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
         />
       </div>
 
       <div className="flex gap-2">
-        <Select>
+        <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="w-[130px]">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
-            {SERVICE_VALUES.map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
+            {SERVICE_STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <Select>
+        <Select value={type} onValueChange={setType}>
           <SelectTrigger className="w-[130px]">
-            <SelectValue placeholder="All Types" />
+            <SelectValue placeholder="All Types">{type === "all" ? "All Types" : type}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {SERVICE_TYPES.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
+            {SERVICE_TYPES.map((t) => (
+              <SelectItem key={t} value={t}>
+                {t}
               </SelectItem>
             ))}
           </SelectContent>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavbarProps } from "@/types/types";
 
@@ -24,7 +25,7 @@ const Navbar = ({
     <header className="w-full border-b bg-background py-3">
       <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
         <a href={logo.url} className="flex items-center gap-2">
-          <img src={logo.src} alt={logo.alt} className="h-6 w-auto" />
+          <Image src={logo.src} alt={logo.alt} width={24} height={24} />
           <span className="text-sm font-medium text-muted-foreground hidden sm:inline">
             {logo.title}
           </span>

@@ -1,56 +1,36 @@
-type ServiceConfigProps = {
-  serviceName: string;
-  serviceType: string;
-  environment: string;
-  endpoint: string;
-  port: number;
-  healthCheckInterval: string;
-};
+import { Service } from "@/types/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const ServiceConfigCard = ({
-  serviceName,
-  serviceType,
-  environment,
-  endpoint,
-  port,
-  healthCheckInterval,
-}: ServiceConfigProps) => {
+interface ServiceConfigCardProps {
+  service: Service;
+}
+
+export function ServiceConfigCard({ service }: ServiceConfigCardProps) {
   return (
-    <div className="bg-white border rounded-xl p-6 shadow-sm w-full">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Service Configuration
-      </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
-        {/* Left column */}
-        <div>
-          <div className="text-sm text-gray-500">Service Name</div>
-          <div className="font-medium text-gray-900">{serviceName}</div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm font-medium">Configuration</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-muted-foreground">Endpoint:</p>
+            <p className="font-medium">{service.endpoint || "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Region:</p>
+            <p className="font-medium">{service.region || "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Owner:</p>
+            <p className="font-medium">{service.owner || "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Created At:</p>
+            <p className="font-medium">{service.createdAt || "N/A"}</p>
+          </div>
         </div>
-        <div>
-          <div className="text-sm text-gray-500">Endpoint</div>
-          <div className="font-medium text-gray-900">{endpoint}</div>
-        </div>
-
-        <div>
-          <div className="text-sm text-gray-500">Service Type</div>
-          <div className="font-medium text-gray-900">{serviceType}</div>
-        </div>
-        <div>
-          <div className="text-sm text-gray-500">Port</div>
-          <div className="font-medium text-gray-900">{port}</div>
-        </div>
-
-        <div>
-          <div className="text-sm text-gray-500">Environment</div>
-          <div className="font-medium text-gray-900">{environment}</div>
-        </div>
-        <div>
-          <div className="text-sm text-gray-500">Health Check Interval</div>
-          <div className="font-medium text-gray-900">{healthCheckInterval}</div>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
-};
-
-export default ServiceConfigCard;
+}

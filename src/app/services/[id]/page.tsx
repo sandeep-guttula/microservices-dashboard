@@ -1,67 +1,64 @@
-import EventHistory from "@/components/service-details/EventHistory";
-import MetricCard from "@/components/service-details/MetricCard";
-import ServiceCard from "@/components/service-details/ServiceCard";
-import ServiceConfigCard from "@/components/service-details/ServiceConfigCard";
-import {
-  InfoCircledIcon,
-  ReloadIcon,
-  ExclamationTriangleIcon,
-  ClockIcon,
-} from "@radix-ui/react-icons";
-import React from "react";
+"use client";
 
-const page = () => {
-  return (
-    <div className="bg-[#F9FAFB] min-h-screen flex items-center py-10 px-4 flex-col">
-      <div className="flex flex-col gap-6">
-        <ServiceCard
-          title="User Database Service"
-          status="Online"
-          type="Database"
-          id="db-user-001"
-          description="Primary user database handling authentication, profiles, and user preferences. Critical service with 99.9% uptime requirement."
-        />
-        <div className="flex w-full max-w-6xl flex-wrap gap-4 mt-6">
-          <MetricCard
-            title="Uptime"
-            value="99.94%"
-            change="+0.02% from last week"
-            changeColor="green"
-            icon={<ClockIcon className="w-4 h-4 text-gray-400" />}
-          />
-          <MetricCard
-            title="Response Time"
-            value="145ms"
-            change="-12ms from yesterday"
-            changeColor="green"
-            icon={<InfoCircledIcon className="w-4 h-4 text-gray-400" />}
-          />
-          <MetricCard
-            title="Error Rate"
-            value="0.06%"
-            change="+0.01% from yesterday"
-            changeColor="red"
-            icon={<ExclamationTriangleIcon className="w-4 h-4 text-gray-400" />}
-          />
-          <MetricCard
-            title="Last Check"
-            value="2s ago"
-            subtext="Auto-refresh enabled"
-            icon={<ReloadIcon className="w-4 h-4 text-gray-400" />}
-          />
-        </div>
-        <ServiceConfigCard
-          serviceName="User Database Service"
-          serviceType="Database"
-          environment="Production"
-          endpoint="db-user-001.internal.monitocorp.com"
-          port={5432}
-          healthCheckInterval="15 seconds"
-        />
-        <EventHistory />
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useServiceDetails, useServiceMetricsQuery } from "@/lib/queries/services";
+import { ServiceCard } from "@/components/service-details/ServiceCard";
+import { ServiceConfigCard } from "@/components/service-details/ServiceConfigCard";
+import { EventHistory } from "@/components/service-details/EventHistory";
+import { MetricCard } from "@/components/service-details/MetricCard";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
+
+import ErrorBoundary from "@/components/ErrorBoundary";
+
+export default function ServiceDetailsPage() {
+  const { id } = useParams() as { id: string };
+  const router = useRouter();
+  const { data: service, isLoading, isError } = useServiceDetails(id);
+  const { data: metrics, isLoading: metricsLoading } = useServiceMetricsQuery(id);
+
+  if (isError) {
+    return <div className="text-red-500">Error loading service details.</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-4 space-y-6">
+        <Skeleton className="h-[150px] w-full" />
+        <Skeleton className="h-[200px] w-full" />
+        <Skeleton className="h-[300px] w-full" />
       </div>
-    </div>
-  );
-};
+    );
+  }
 
-export default page;
+  if (!service) {
+    return <div className="text-center text-red-500">Service not found.</div>;
+  }
+
+  return (
+    <ErrorBoundary>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="container mx-auto p-4 space-y-6"
+      >
+        <div>
+          <Button onClick={() => router.back()}>&larr; Back</Button>
+        </div>
+        <ServiceCard service={service} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <MetricCard title="Uptime" value={metrics?.uptime ?? "Loading..."} />
+          <MetricCard title="Latency" value={metrics?.latency ?? "Loading..."} />
+          <MetricCard title="Error Rate" value={metrics?.errorRate ?? "Loading..."} />
+        </div>
+        <ServiceConfigCard service={service} />
+        <Suspense fallback={<div>Loading events...</div>}>
+          <EventHistory serviceId={service.id} />
+        </Suspense>
+      </motion.div>
+    </ErrorBoundary>
+  );
+}

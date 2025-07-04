@@ -1,47 +1,23 @@
-import {
-  CheckCircledIcon,
-  ExclamationTriangleIcon,
-  InfoCircledIcon,
-  GearIcon,
-} from "@radix-ui/react-icons";
+import { ServiceEvent } from "@/types/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
 
-type EventType = "success" | "warning" | "error" | "info";
+interface EventCardProps {
+  event: ServiceEvent;
+}
 
-type EventCardProps = {
-  type: EventType;
-  title: string;
-  description: string;
-  metadata: string;
-  time: string;
-};
-
-const iconMap: Record<EventType, JSX.Element> = {
-  success: <CheckCircledIcon className="text-green-500 w-5 h-5" />,
-  warning: <GearIcon className="text-yellow-500 w-5 h-5" />,
-  error: <ExclamationTriangleIcon className="text-red-500 w-5 h-5" />,
-  info: <InfoCircledIcon className="text-blue-500 w-5 h-5" />,
-};
-
-const EventCard = ({
-  type,
-  title,
-  description,
-  metadata,
-  time,
-}: EventCardProps) => {
+export function EventCard({ event }: EventCardProps) {
   return (
-    <div className="flex justify-between items-start py-4 border-b">
-      <div className="flex gap-3">
-        <div className="pt-1">{iconMap[type]}</div>
-        <div>
-          <div className="font-semibold text-gray-900">{title}</div>
-          <div className="text-sm text-gray-600">{description}</div>
-          <div className="text-sm text-gray-500 mt-1">{metadata}</div>
+    <Card className="mb-4">
+      <CardContent className="p-4">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium">{event.type}</span>
+          <span className="text-xs text-muted-foreground">
+            {format(new Date(event.timestamp), "PPP p")}
+          </span>
         </div>
-      </div>
-      <div className="text-sm text-gray-400 whitespace-nowrap">{time}</div>
-    </div>
+        <p className="text-muted-foreground text-sm">{event.description}</p>
+      </CardContent>
+    </Card>
   );
-};
-
-export default EventCard;
+}

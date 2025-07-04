@@ -1,95 +1,117 @@
+import {
+  useInfiniteQuery,
+  useQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
+import {
+  fetchServiceById,
+  fetchServiceEvents,
+  fetchServices,
+  fetchServiceStatuses,
+  fetchServiceMetrics,
+} from "@/lib/api";
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Service, ServiceEvent } from '@/types/types';
-
-const fetchServices = async (): Promise<Service[]> => {
-  const res = await fetch('/api/services');
-  if (!res.ok) {
-    throw new Error('Failed to fetch services');
-  }
-  return res.json();
+// Query Keys
+export const servicesKeys = {
+  all: ["services"] as const,
+  lists: () => [...servicesKeys.all, "list"] as const,
+  list: (filters: object) => [...servicesKeys.lists(), filters] as const,
+  details: () => [...servicesKeys.all, "detail"] as const,
+  detail: (id: string) => [...servicesKeys.details(), id] as const,
+  statuses: () => [...servicesKeys.all, "statuses"] as const,
+  events: () => [...servicesKeys.all, "events"] as const,
+  eventList: (id: string) => [...servicesKeys.events(), id] as const,
+  metrics: (id: string) => [...servicesKeys.all, "metrics", id] as const,
 };
 
-const fetchServiceById = async (id: string): Promise<Service> => {
-  const res = await fetch(`/api/services/${id}`);
-  if (!res.ok) {
-    throw new Error('Failed to fetch service');
-  }
-  return res.json();
-};
-
-const fetchServiceEvents = async (id: string): Promise<ServiceEvent[]> => {
-  const res = await fetch(`/api/services/${id}/events`);
-  if (!res.ok) {
-    throw new Error('Failed to fetch service events');
-  }
-  return res.json();
-};
-
-const createService = async (newService: Omit<Service, 'id'>): Promise<Service> => {
-  const res = await fetch('/api/services', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newService),
-  });
-  if (!res.ok) {
-    throw new Error('Failed to create service');
-  }
-  return res.json();
-};
-
-const updateService = async (updatedService: Partial<Service> & { id: string }): Promise<Service> => {
-  const res = await fetch(`/api/services/${updatedService.id}`,
-    {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedService),
-    }
-  );
-  if (!res.ok) {
-    throw new Error('Failed to update service');
-  }
-  return res.json();
-};
-
-const deleteService = async (id: string): Promise<void> => {
-  const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
-  if (!res.ok) {
-    throw new Error('Failed to delete service');
-  }
-};
-
-export const useGetServices = () => useQuery({ queryKey: ['services'], queryFn: fetchServices });
-export const useGetServiceById = (id: string) => useQuery({ queryKey: ['service', id], queryFn: () => fetchServiceById(id) });
-export const useGetServiceEvents = (id: string) => useQuery({ queryKey: ['serviceEvents', id], queryFn: () => fetchServiceEvents(id) });
-
-export const useCreateService = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: createService,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['services'] });
-    },
+/**
+ * 1. useServicesQuery(filters) – paginated & filterable
+ */
+export const useServicesQuery = (filters: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  name_like?: string;
+}) => {
+  return useQuery({
+    queryKey: servicesKeys.list(filters),
+    queryFn: () => fetchServices(filters),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
-export const useUpdateService = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateService,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['services'] });
-      queryClient.invalidateQueries({ queryKey: ['service', data.id] });
-    },
+/**
+ * 2. useServiceStatusPolling() – polls statuses every 15s
+ */
+import { usePolling } from "@/hooks/usePolling";
+
+export const useServiceStatusPolling = () => {
+  const queryResult = useQuery({
+    queryKey: servicesKeys.statuses(),
+    queryFn: fetchServiceStatuses,
+    staleTime: 1000 * 60 * 1, // 1 minute
+  });
+
+  usePolling({
+    queryKey: servicesKeys.statuses(),
+    interval: 15 * 1000, // 15 seconds
+    enabled: true, // Polling is always enabled for status
+  });
+
+  return queryResult;
+};
+
+/**
+ * 3. useServiceDetails(id) – fetches single service
+ */
+export const useServiceDetails = (id: string) => {
+  return useQuery({
+    queryKey: servicesKeys.detail(id),
+    queryFn: () => fetchServiceById(id),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+    placeholderData: keepPreviousData,
   });
 };
 
-export const useDeleteService = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteService,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['services'] });
-    },
+/**
+ * 4. useServiceEvents(id) – infinite query for events list
+ */
+export const useServiceEvents = (id: string) => {
+  const queryResult = useInfiniteQuery({
+    queryKey: servicesKeys.eventList(id),
+    queryFn: ({ pageParam }) => fetchServiceEvents(id, pageParam),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 1,
+  });
+
+  usePolling({
+    queryKey: servicesKeys.eventList(id),
+    interval: 15 * 1000, // 15 seconds
+    enabled: true,
+  });
+
+  return queryResult;
+};
+
+/**
+ * 5. useAllServicesQuery() – fetches all services for counts
+ */
+export const useAllServicesQuery = () => {
+  return useQuery({
+    queryKey: servicesKeys.lists(),
+    queryFn: () => fetchServices({}), // Fetch all services
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+/**
+ * 6. useServiceMetricsQuery(id) – fetches service metrics
+ */
+export const useServiceMetricsQuery = (id: string) => {
+  return useQuery({
+    queryKey: servicesKeys.metrics(id),
+    queryFn: () => fetchServiceMetrics(id),
+    staleTime: 1000 * 60 * 1, // 1 minute
   });
 };

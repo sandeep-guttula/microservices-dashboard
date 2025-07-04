@@ -14,8 +14,14 @@ export type ServiceEvent = {
   id: string;
   serviceId: string;
   timestamp: string;
-  type: string;
+  type: "online" | "offline" | "degraded" | "maintenance" | "error" | "restart";
   message: string;
+};
+
+export type ServiceMetrics = {
+  uptime: string;
+  latency: string;
+  errorRate: string;
 };
 
 export type ServicesListProps = {

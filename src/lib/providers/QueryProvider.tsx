@@ -9,7 +9,20 @@ export default function QueryProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 3,
+            onError: (error) => {
+              console.error("Query error:", error);
+              // toast.error(`Something went wrong: ${error.message}`);
+            },
+          },
+        },
+      })
+  );
 
   return (
     <QueryClientProvider client={queryClient}>

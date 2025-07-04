@@ -190,14 +190,14 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "1",
       serviceId: "1",
       timestamp: "2025-07-01T11:30:00Z",
-      type: "start",
+      type: "online",
       message: "Auth Service started",
     },
     {
       id: "2",
       serviceId: "1",
       timestamp: "2025-07-01T11:45:00Z",
-      type: "stop",
+      type: "offline",
       message: "Auth Service stopped",
     },
   ],
@@ -206,14 +206,14 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "3",
       serviceId: "2",
       timestamp: "2025-07-01T11:00:00Z",
-      type: "start",
+      type: "online",
       message: "Payment Service started",
     },
     {
       id: "4",
       serviceId: "2",
       timestamp: "2025-07-01T11:20:00Z",
-      type: "error",
+      type: "offline",
       message: "Payment gateway timeout",
     },
   ],
@@ -231,7 +231,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "6",
       serviceId: "4",
       timestamp: "2025-07-01T10:50:00Z",
-      type: "start",
+      type: "online",
       message: "User DB initialized",
     },
   ],
@@ -249,7 +249,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "8",
       serviceId: "6",
       timestamp: "2025-07-01T11:25:00Z",
-      type: "start",
+      type: "online",
       message: "Analytics Service is up",
     },
   ],
@@ -258,7 +258,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "9",
       serviceId: "7",
       timestamp: "2025-07-01T11:15:00Z",
-      type: "stop",
+      type: "offline",
       message: "Product DB went down",
     },
   ],
@@ -267,7 +267,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "10",
       serviceId: "8",
       timestamp: "2025-07-01T11:40:00Z",
-      type: "warning",
+      type: "degraded",
       message: "Cart Service memory spike detected",
     },
   ],
@@ -276,7 +276,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "11",
       serviceId: "9",
       timestamp: "2025-07-01T12:00:00Z",
-      type: "start",
+      type: "online",
       message: "Order Service deployed",
     },
   ],
@@ -285,7 +285,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "12",
       serviceId: "10",
       timestamp: "2025-07-01T11:10:00Z",
-      type: "stop",
+      type: "offline",
       message: "Search index error occurred",
     },
   ],
@@ -294,7 +294,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "13",
       serviceId: "11",
       timestamp: "2025-07-01T12:00:00Z",
-      type: "start",
+      type: "online",
       message: "Inventory DB synced",
     },
   ],
@@ -303,7 +303,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "14",
       serviceId: "12",
       timestamp: "2025-07-01T12:01:00Z",
-      type: "start",
+      type: "offline",
       message: "Shipping Service activated",
     },
   ],
@@ -321,7 +321,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "16",
       serviceId: "14",
       timestamp: "2025-07-01T11:55:00Z",
-      type: "start",
+      type: "online",
       message: "Billing Service up and running",
     },
   ],
@@ -330,7 +330,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "17",
       serviceId: "15",
       timestamp: "2025-07-01T11:20:00Z",
-      type: "stop",
+      type: "offline",
       message: "Session Store crash detected",
     },
   ],
@@ -339,7 +339,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "18",
       serviceId: "16",
       timestamp: "2025-07-01T12:05:00Z",
-      type: "start",
+      type: "online",
       message: "Feedback Service launched",
     },
   ],
@@ -348,7 +348,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "19",
       serviceId: "17",
       timestamp: "2025-07-01T11:59:00Z",
-      type: "start",
+      type: "online",
       message: "Queue Monitor up",
     },
   ],
@@ -357,7 +357,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "20",
       serviceId: "18",
       timestamp: "2025-07-01T11:35:00Z",
-      type: "warning",
+      type: "online",
       message: "Recommendation Service returned stale data",
     },
   ],
@@ -366,7 +366,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "21",
       serviceId: "19",
       timestamp: "2025-07-01T12:10:00Z",
-      type: "start",
+      type: "online",
       message: "Logging DB active",
     },
   ],
@@ -375,7 +375,7 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
       id: "22",
       serviceId: "20",
       timestamp: "2025-07-01T11:00:00Z",
-      type: "stop",
+      type: "online",
       message: "Upload Service disconnected",
     },
   ],
@@ -384,8 +384,25 @@ const serviceEvents: { [key: string]: ServiceEvent[] } = {
 const simulateStatusChanges = () => {
   setInterval(() => {
     const randomIndex = Math.floor(Math.random() * services.length);
-    const randomStatus = Math.random() > 0.5 ? "Online" : "Offline";
-    services[randomIndex].status = randomStatus;
+    const service = services[randomIndex];
+    const oldStatus = service.status;
+    const newStatus = Math.random() > 0.5 ? "Online" : "Offline";
+
+    if (oldStatus !== newStatus) {
+      service.status = newStatus;
+      const event: ServiceEvent = {
+        id: Math.random().toString(36).substring(2),
+        serviceId: service.id,
+        timestamp: new Date().toISOString(),
+        type: newStatus === "Online" ? "online" : "offline",
+        message: `Service went ${newStatus.toLowerCase()}`,
+      };
+
+      if (!serviceEvents[service.id]) {
+        serviceEvents[service.id] = [];
+      }
+      serviceEvents[service.id].push(event);
+    }
   }, 10000);
 };
 
@@ -451,6 +468,22 @@ export const handlers = [
     const paginated = events.slice(start, start + limit);
 
     return HttpResponse.json(paginated);
+  }),
+
+  http.get("/api/services/:id/metrics", async ({ params }) => {
+    await delay();
+    if (randomFail()) return new HttpResponse(null, { status: 500 });
+
+    const service = services.find((s) => s.id === params.id);
+    if (!service) return new HttpResponse(null, { status: 404 });
+
+    const metrics = {
+      uptime: service.status === "Online" ? "99.9%" : "0%",
+      latency: `${Math.floor(Math.random() * 100) + 20}ms`,
+      errorRate: `${(Math.random() * 0.5).toFixed(2)}%`,
+    };
+
+    return HttpResponse.json(metrics);
   }),
 
   http.post("/api/services", async ({ request }) => {
