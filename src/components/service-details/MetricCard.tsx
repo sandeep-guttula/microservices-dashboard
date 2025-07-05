@@ -1,4 +1,3 @@
-
 import { useServiceMetricsQuery } from "@/lib/queries/services";
 
 interface MetricCardProps {
@@ -6,7 +5,12 @@ interface MetricCardProps {
 }
 
 export function MetricCard({ serviceId }: MetricCardProps) {
-  const { data: metrics, isLoading, isError, error } = useServiceMetricsQuery(serviceId);
+  const {
+    data: metrics,
+    isLoading,
+    isError,
+    error,
+  } = useServiceMetricsQuery(serviceId);
 
   if (isLoading) {
     return <div>Loading metrics...</div>;
@@ -31,8 +35,8 @@ export function MetricCard({ serviceId }: MetricCardProps) {
           <p className="text-sm">{metrics.uptime}%</p>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">Response Time</p>
-          <p className="text-sm">{metrics.responseTime}ms</p>
+          <p className="text-sm text-muted-foreground">Latency</p>
+          <p className="text-sm">{metrics.latency}ms</p>
         </div>
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">Error Rate</p>
