@@ -12,9 +12,9 @@ import { EditServiceModal } from "./EditServiceModal";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
 
 const typeIcons = {
-  API: <HiOutlineGlobeAlt className="text-xl text-gray-500" />,
-  Database: <FiDatabase className="text-xl text-gray-500" />,
-  Queue: <HiOutlineQueueList className="text-xl text-gray-500" />,
+  API: <HiOutlineGlobeAlt className="text-xl text-muted-foreground" />,
+  Database: <FiDatabase className="text-xl text-muted-foreground" />,
+  Queue: <HiOutlineQueueList className="text-xl text-muted-foreground" />,
   Other: <div />,
   Cache: <div />,
   Gateway: <div />,
@@ -25,7 +25,10 @@ interface ServiceRowProps {
 }
 
 export const ServiceRow = memo(({ service }: ServiceRowProps) => {
-  const { service: polledService } = usePollServiceStatus(service.id);
+  const { data: polledService } = usePollServiceStatus(
+    service.id,
+    service.status
+  );
   const displayStatus = polledService?.status || service.status;
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -37,17 +40,17 @@ export const ServiceRow = memo(({ service }: ServiceRowProps) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="border-b hover:bg-gray-50"
+      className="border-b hover:bg-muted/50"
     >
       <td className="px-6 py-4 flex items-center gap-3">
         {typeIcons[service.type]}
         <Link href={`/services/${service.id}`} className="hover:underline">
           <p className="font-medium">{service.name}</p>
-          <p className="text-xs text-gray-500">{service.id}</p>
+          <p className="text-xs text-muted-foreground">{service.id}</p>
         </Link>
       </td>
       <td className="px-6 py-4">
-        <span className="bg-gray-100 text-xs px-2 py-1 rounded-full">
+        <span className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full">
           {service.type}
         </span>
       </td>
@@ -61,7 +64,7 @@ export const ServiceRow = memo(({ service }: ServiceRowProps) => {
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogTrigger asChild>
             <button
-              className="text-gray-600 hover:text-blue-600"
+              className="text-muted-foreground hover:text-blue-600"
               aria-label={`Edit ${service.name}`}
             >
               <FaEdit />
@@ -75,7 +78,7 @@ export const ServiceRow = memo(({ service }: ServiceRowProps) => {
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
           <DialogTrigger asChild>
             <button
-              className="text-gray-600 hover:text-red-600"
+              className="text-muted-foreground hover:text-red-600"
               aria-label={`Delete ${service.name}`}
             >
               <FaTrash />

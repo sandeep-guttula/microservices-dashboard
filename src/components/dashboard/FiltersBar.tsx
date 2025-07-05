@@ -75,7 +75,7 @@ export function FiltersBar() {
   }, [type, router, searchParams]);
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-md border p-4 bg-muted/50 w-full">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-md border border-border p-4 bg-muted/50 w-full">
       <div className="relative w-full sm:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input

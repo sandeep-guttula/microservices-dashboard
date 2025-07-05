@@ -40,15 +40,13 @@ export default function Dashboard() {
 
   return (
     <ErrorBoundary>
-      <div className="bg-[#F9FAFB] min-h-screen flex justify-center items-start py-10 px-4">
+      <div className="bg-background min-h-screen flex justify-center items-start py-10 px-4">
         <section className="flex flex-col items-center w-full max-w-6xl gap-6">
           <div className="flex flex-col md:flex-row justify-between w-full gap-4">
             <div className="flex flex-col">
-              <h2 className="text-xl md:text-2xl font-semibold">
-                Service Overview
-              </h2>
-              <p className="text-sm md:text-base text-gray-600">
-                Monitor and manage your microservices in real-time
+              <h1 className="text-3xl font-bold">Welcome to MonitoCorp</h1>
+              <p className="text-lg text-muted-foreground">
+                Your one-stop solution for monitoring your microservices.
               </p>
             </div>
             <div className="self-start md:self-center">
@@ -77,7 +75,7 @@ export default function Dashboard() {
               isLoading={isLoading}
             />
             <ServiceItem
-              icon={<IoLayersOutline className="text-gray-700" />}
+              icon={<IoLayersOutline className="text-muted-foreground" />}
               label="Total Services"
               value={totalServices}
               isLoading={isLoading}
@@ -87,13 +85,13 @@ export default function Dashboard() {
           <FiltersBar />
           {/* Show a skeleton loader while services are being fetched */}
           {isLoading ? (
-            <div className="bg-white rounded-lg border shadow-sm w-full">
+            <div className="bg-card rounded-lg border shadow-sm w-full">
               <div className="px-6 py-4 border-b">
                 <h3 className="text-lg font-semibold">Services</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs border-b">
+                  <thead className="bg-muted/50 text-muted-foreground uppercase text-xs border-b">
                     <tr>
                       <th className="px-6 py-3">Service</th>
                       <th className="px-6 py-3">Type</th>
@@ -102,7 +100,7 @@ export default function Dashboard() {
                       <th className="px-6 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="text-gray-700">
+                  <tbody className="text-card-foreground">
                     {/* Show skeleton rows while loading */}
                     {Array.from({ length: 5 }).map((_, i) => (
                       <ServiceRowSkeleton key={i} />
