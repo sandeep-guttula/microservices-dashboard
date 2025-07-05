@@ -7,9 +7,9 @@ export const usePollServiceStatus = (id: string, initialStatus: string) => {
   return useQuery<Service>({
     queryKey: servicesKeys.detail(id),
     queryFn: () => fetchServiceById(id),
-    refetchInterval: 15000, // Poll every 15 seconds
+    refetchInterval: 15000,
     staleTime: 0,
-    initialData: () => ({ id, status: initialStatus } as Service),
+    initialData: () => ({ id, status: initialStatus }) as Service,
     enabled: true,
   });
 };

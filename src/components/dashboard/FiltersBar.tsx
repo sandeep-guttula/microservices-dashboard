@@ -14,11 +14,6 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-/**
- * A component that provides filtering options for the services list.
- * It uses the `useSearchParams` hook to manage the filter state in the URL,
- * allowing for bookmarkable and shareable filter configurations.
- */
 export function FiltersBar() {
   const router = useRouter();
   const searchParams = useSearchParams();

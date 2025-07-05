@@ -50,11 +50,9 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="self-start md:self-center">
-              {/* Dialog to add a new service */}
               <AddServiceDialog />
             </div>
           </div>
-          {/* Display service status cards */}
           <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
             <ServiceItem
               icon={<IoMdCheckmarkCircle className="text-green-500" />}
@@ -81,7 +79,6 @@ export default function Dashboard() {
               isLoading={isLoading}
             />
           </section>
-          {/* Filters for the services list */}
           <FiltersBar />
           {/* Show a skeleton loader while services are being fetched */}
           {isLoading ? (
