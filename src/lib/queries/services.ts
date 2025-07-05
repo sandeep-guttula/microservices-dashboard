@@ -64,7 +64,9 @@ export const fetchServiceEvents = async (
   };
 };
 
-export const fetchServiceMetrics = async (id: string): Promise<ServiceMetrics> => {
+export const fetchServiceMetrics = async (
+  id: string
+): Promise<ServiceMetrics> => {
   const response = await fetch(`${API_BASE_URL}/services/${id}/metrics`);
   if (!response.ok) {
     throw new Error("Failed to fetch service metrics");
@@ -129,7 +131,6 @@ export const createServiceEvent = async (
   return response.json();
 };
 
-
 // Query Keys
 export const servicesKeys = {
   all: ["services"] as const,
@@ -181,7 +182,7 @@ export const useServiceEvents = (id: string) => {
 export const useAllServicesQuery = () => {
   return useQuery({
     queryKey: servicesKeys.lists(),
-    queryFn: () => fetchServices({}), // Fetch all services
+    queryFn: () => fetchServices({}),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

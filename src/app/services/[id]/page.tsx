@@ -1,79 +1,54 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { useServiceDetails, useServiceMetricsQuery } from "@/lib/queries/services";
+import { useServiceDetails } from "@/lib/queries/services";
 import { ServiceCard } from "@/components/service-details/ServiceCard";
-import { ServiceConfigCard } from "@/components/service-details/ServiceConfigCard";
 import { EventHistory } from "@/components/service-details/EventHistory";
 import { MetricCard } from "@/components/service-details/MetricCard";
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { motion } from "framer-motion";
-
-import ErrorBoundary from "@/components/ErrorBoundary";
+import { ServiceConfigCard } from "@/components/service-details/ServiceConfigCard";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { ServiceDetailsSkeleton } from "@/components/service-details/ServiceDetailsSkeleton";
 
 export default function ServiceDetailsPage() {
-  const { id } = useParams() as { id: string };
+  const params = useParams();
+  const id = params.id as string;
   const router = useRouter();
-  const { data: service, isLoading, isError: isServiceError, isFetching: isServiceFetching } = useServiceDetails(id);
-  const { data: metrics, isError: isMetricsError, isFetching: isMetricsFetching } = useServiceMetricsQuery(id);
 
-  if (isServiceError) {
-    return (
-      <div className="container mx-auto p-4 text-center">
-        <p className="text-red-500 mb-4">Error loading service details.</p>
-        <Button onClick={() => router.refresh()}>Refresh</Button>
-      </div>
-    );
-  }
+  const { data: service, isLoading, isError, error } = useServiceDetails(id);
 
   if (isLoading) {
-    return (
-      <div className="container mx-auto p-4 space-y-6">
-        <Skeleton className="h-[150px] w-full" />
-        <Skeleton className="h-[200px] w-full" />
-        <Skeleton className="h-[300px] w-full" />
-      </div>
-    );
+    return <ServiceDetailsSkeleton />;
+  }
+
+  if (isError) {
+    return <div className="flex justify-center items-center h-screen">Error: {error.message}</div>;
   }
 
   if (!service) {
-    return <div className="text-center text-red-500">Service not found.</div>;
+    return <div className="flex justify-center items-center h-screen">Service not found</div>;
   }
 
   return (
-    <ErrorBoundary>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="container mx-auto p-4 space-y-6"
-      >
-        <div>
-          <Button onClick={() => router.back()}>&larr; Back</Button>
-          {(isServiceFetching || isMetricsFetching) && <span className="ml-4 text-gray-500">Updating...</span>}
+    <div className="bg-background min-h-screen flex justify-center items-start py-10 px-4">
+      <div className="w-full max-w-6xl">
+        <div className="flex items-center mb-4">
+          <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
         </div>
-        <ServiceCard service={service} />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isMetricsError ? (
-            <div className="text-red-500 col-span-3 text-center">
-              <p className="mb-4">Error loading metrics.</p>
-              <Button onClick={() => router.refresh()}>Refresh</Button>
-            </div>
-          ) : (
-            <>
-              <MetricCard title="Uptime" value={metrics?.uptime ?? "Loading..."} />
-              <MetricCard title="Latency" value={metrics?.latency ?? "Loading..."} />
-              <MetricCard title="Error Rate" value={metrics?.errorRate ?? "Loading..."} />
-            </>
-          )}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="lg:col-span-2 space-y-8">
+            <ServiceCard service={service} />
+            <EventHistory serviceId={service.id} />
+          </div>
+          <div className="space-y-8">
+            <MetricCard serviceId={service.id} />
+            <ServiceConfigCard service={service} />
+          </div>
         </div>
-        <ServiceConfigCard service={service} />
-        <Suspense fallback={<div>Loading events...</div>}>
-          <EventHistory serviceId={service.id} />
-        </Suspense>
-      </motion.div>
-    </ErrorBoundary>
+      </div>
+    </div>
   );
 }

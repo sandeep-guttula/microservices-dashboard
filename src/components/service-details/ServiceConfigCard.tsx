@@ -1,5 +1,5 @@
+
 import { Service } from "@/types/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ServiceConfigCardProps {
   service: Service;
@@ -7,22 +7,20 @@ interface ServiceConfigCardProps {
 
 export function ServiceConfigCard({ service }: ServiceConfigCardProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-sm font-medium">Configuration</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-muted-foreground">Version:</p>
-            <p className="font-medium">{service.version || "N/A"}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Description:</p>
-            <p className="font-medium">{service.description || "N/A"}</p>
-          </div>
+    <div className="bg-card rounded-lg border shadow-sm">
+      <div className="px-6 py-4 border-b">
+        <h3 className="text-lg font-semibold">Configuration</h3>
+      </div>
+      <div className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">Name</p>
+          <p className="text-sm">{service.name}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">Type</p>
+          <p className="text-sm">{service.type}</p>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -33,6 +33,8 @@ function GlobalRefresh() {
 
 
 
+import { ThemeProvider } from "@/lib/providers/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,14 +45,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MswProvider />
-        <QueryProvider>
-          <GlobalRefresh />
-          <Navbar />
-          {children}
-          <Footer />
-        </QueryProvider>
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <MswProvider />
+          <QueryProvider>
+            <GlobalRefresh />
+            <Navbar />
+            {children}
+            <Footer />
+          </QueryProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

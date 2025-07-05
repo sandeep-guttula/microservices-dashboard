@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const ServiceRowSkeleton = () => {
   return (
-    <tr className="border-b border-gray-200">
+    <tr className="border-b border-gray-200 dark:border-gray-700">
       <td className="px-6 py-4">
         <Skeleton className="h-4 w-32" />
       </td>

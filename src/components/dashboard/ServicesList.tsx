@@ -44,14 +44,14 @@ export default function ServicesList() {
   }
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm w-full">
+    <div className="bg-card rounded-lg border shadow-sm w-full">
       <div className="px-6 py-4 border-b">
         <h3 className="text-lg font-semibold">Services</h3>
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-50 text-gray-500 uppercase text-xs border-b">
+          <thead className="bg-muted/50 text-muted-foreground uppercase text-xs border-b">
             <tr>
               <th className="px-6 py-3">Service</th>
               <th className="px-6 py-3">Type</th>
@@ -60,7 +60,7 @@ export default function ServicesList() {
               <th className="px-6 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700">
+          <tbody className="text-card-foreground">
             <AnimatePresence>
               {isLoading
                 ? Array.from({ length: 10 }).map((_, i) => (
@@ -75,18 +75,18 @@ export default function ServicesList() {
       </div>
 
       {data?.length === 0 && !isLoading && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-muted-foreground">
           No services found.
         </div>
       )}
 
-      <div className="flex justify-between items-center px-6 py-3 text-sm text-gray-600 border-t">
+      <div className="flex justify-between items-center px-6 py-3 text-sm text-muted-foreground border-t">
         <span>
           Showing {(data?.length ?? 0) > 0 ? `1 to ${data?.length ?? 0}` : 0} of{" "}
           {data?.length ?? 0} services
         </span>
         <div className="space-x-2 flex items-center">
-          {isFetching && <span className="text-sm text-gray-500">Loading...</span>}
+          {isFetching && <span className="text-sm text-muted-foreground">Loading...</span>}
           <Button
             variant="outline"
             size="sm"

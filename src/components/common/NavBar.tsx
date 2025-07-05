@@ -2,6 +2,8 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavbarProps } from "@/types/types";
 
+import { ThemeToggle } from "./ThemeToggle";
+
 const Navbar = ({
   logo = {
     url: "#",
@@ -31,15 +33,18 @@ const Navbar = ({
           </span>
         </a>
 
-        {/* Avatar + Name */}
-        <div className="flex items-center gap-2">
-          <span className="hidden text-sm text-muted-foreground sm:inline">
-            {user.name}
-          </span>
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatarUrl} alt={user.name} />
-            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-          </Avatar>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          {/* Avatar + Name */}
+          <div className="flex items-center gap-2">
+            <span className="hidden text-sm text-muted-foreground sm:inline">
+              {user.name}
+            </span>
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.avatarUrl} alt={user.name} />
+              <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </div>
     </header>
